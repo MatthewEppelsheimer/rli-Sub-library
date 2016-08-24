@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Usage: source <path>
+# Example: source ./subspace/activate
+# Summary: Activates a subspace within a bash environment
+
+cwd=$(pwd)
+path="${BASH_SOURCE[@]}"
+
+if [[ $path =~ (^[\./])(.*) ]]; then
+   if [[ "/" = "${BASH_REMATCH[1]}" ]]; then
+      abs_path=$(dirname $path)
+   else
+      abs_path=$(dirname "$cwd${BASH_REMATCH[2]}")
+   fi
+   export PATH="$abs_path/bin:$PATH"
+   echo "Subspace activated"
+else
+   echo "Invalid path"
+fi
