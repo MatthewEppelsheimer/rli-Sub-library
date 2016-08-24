@@ -2,45 +2,54 @@
 
 set -e
 
-resolve_link() {
-   $(type -p greadlink readlink | head -1) "$1"
-}
-
-abs_dirname() {
-   local cwd="$(pwd)"
-   local path="$1"
-
-   while [ -n "$path" ]; do
-      cd "${path%/*}"
-      local name="${path##*/}"
-      path="$(resolve_link "$name" || true)"
-   done
-
-   pwd
-   cd "$cwd"
-}
-
+# Original command
 base=$(basename $0)
-lib="$(abs_dirname "$0")"
-export _SUB_ROOT="$(abs_dirname "$lib")"
-export PATH="${lib}:$PATH"
 
+# Current working directory
+cwd=$(pwd)
+
+# Path that was called
+path="${BASH_SOURCE[@]}"
+
+echo $path
+
+# Add root dir to path
+if [[ $path =~ (^[\./])(.*)(/"$base") ]]; then
+   if [[ "/" = "${BASH_REMATCH[1]}" ]]; then
+      export _SUB_ROOT="${path%/*/$base}"
+   else
+      root=$(dirname "$cwd${BASH_REMATCH[2]}")
+      abs_path="$cwd${BASH_REMATCH[2]}"
+      export _SUB_ROOT="${abs_path%/*}"
+   fi
+else
+   echo "Invalid path to $base"
+   exit 1
+fi
+
+# Add lib dir to path
+export PATH="$_SUB_ROOT/libexec:$PATH"
+
+# Parse commands
 command="$1"
-# Help command
 case "$command" in
+# Help command
 "" | "-h" | "--help" )
-   exec "$base-help"
+   if [ ! -x "$base-help" ]; then
+      exec "$base-help" >&2
+      exit 1
+   fi
    ;;
 # Enable autocompletion
-"--complete" )
-   echo --path
-   ;;
+# "--complete" )
+#    echo --path
+#    ;;
 # Handle all other commands
 * )
    command_path="$(command -v "$base-$command" || true)"
 
    if [ ! -x "$command_path" ]; then
-      echo "$base: no such command \`$command'" >&2
+      echo "$base: no such command '$command'" >&2
       exit 1
    fi
 

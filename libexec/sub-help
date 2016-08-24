@@ -97,7 +97,7 @@ truncate() {
 
 command="$1"
 case "$command" in
-"") 
+"" ) 
    echo "Usage:
 
       $base <command> [<args>]
@@ -107,7 +107,7 @@ case "$command" in
       $(print_summaries)"
    echo "See '$base help <command>' for information on a specific command."
    ;;
-*)
+* )
    file="$(command_path "$command")"
 
    if [ -n "$file" ]; then
