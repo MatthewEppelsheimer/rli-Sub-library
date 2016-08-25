@@ -1,29 +1,27 @@
 #!/usr/bin/env bash
 # Usage: sub <command> [<args>]
-# Summary: Welcome to subspace, an easy way to namespace subcommands
+# Summary: Welcome sub to subspace, an easy way to namespace subcommands
 
 set -e
 
-# Original command
-base=$(basename $0)
+# Command namespace
+export SUB_COMMAND=$(basename $0)
 
-# Current working directory
+# Path variables
 cwd=$(pwd)
-
-# Path that was called
 path="${BASH_SOURCE[@]}"
 
 # Add root dir to path
-if [[ $path =~ (^[\./])(.*)(/"$base") ]]; then
+if [[ $path =~ (^[\./])(.*)(/"$SUB_COMMAND") ]]; then
    if [[ "/" = "${BASH_REMATCH[1]}" ]]; then
-      export _SUB_ROOT="${path%/*/$base}"
+      export _SUB_ROOT="${path%/*/$SUB_COMMAND}"
    else
       root=$(dirname "$cwd${BASH_REMATCH[2]}")
       abs_path="$cwd${BASH_REMATCH[2]}"
       export _SUB_ROOT="${abs_path%/*}"
    fi
 else
-   echo "Invalid path to $base"
+   echo "Invalid path to $SUB_COMMAND"
    exit 1
 fi
 
@@ -35,17 +33,17 @@ command="$1"
 case "$command" in
 # Help command
 "" | "-h" | "--help" )
-   if [[ ! -x "$base-help" ]]; then
-      exec "$base-help" >&2
+   if [[ ! -x "$SUB_COMMAND-help" ]]; then
+      exec "$SUB_COMMAND-help" >&2
       exit 1
    fi
    ;;
 # All other commands
 * )
-   command_path="$(command -v "$base-$command" || true)"
+   command_path="$(command -v "$SUB_COMMAND-$command" || true)"
 
    if [[ ! -x "$command_path" ]]; then
-      echo "$base: no such command '$command'" >&2
+      echo "$SUB_COMMAND: no such command '$command'" >&2
       exit 1
    fi
 

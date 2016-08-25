@@ -5,17 +5,14 @@
 
 set -e
 
-base="$(basename $0)"
-base="${base%-commands}"
-
-args="$1"
-case "$args" in
+flag="$1"
+case "$flag" in
 # Human-readable list
 "" )
-   $base helper commands
+   $SUB_COMMAND helper commands
    ;;
 # Machine-readable list
 "-l" | "--list" )
-   $base helper commands -l
+   $SUB_COMMAND helper commands -l
    ;;
 esac

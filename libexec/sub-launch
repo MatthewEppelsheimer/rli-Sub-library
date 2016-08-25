@@ -3,7 +3,7 @@
 # Summary: Launch a new executable into subspace
 # Help: Launch creates a new executable in subspace. Your
 # new command is added to the subspace path and comes
-# with these subcommands by default:
+# with these default subcommands:
 #
 #      <command> commands
 #      <command> help
@@ -16,10 +16,8 @@ command="$1"
 
 if [[ -z $command ]]
 then
-   echo "Usage:
-
-      sub launch <command>
-   "
+   usage="$($base helper usage $command)"
+   printf "Usage:\n\n%-5s%s\n\n" "" "$usage"
    echo "Please provide a launch command"
    exit 0
 fi
@@ -38,19 +36,23 @@ else
    cp "$_SUB_ROOT/libexec/sub" "$path"
    chmod 755 $path
    ln -s $path $link
+   sed -i "s/$SUB_COMMAND\( \|$\)/$command\1/g" "$path"
+   sed -i "s/\(# Summary: \)\(.*$\)/\1New command in subspace. Add you subcommands!/g" "$path"
 
    # Add help command
    cp "$_SUB_ROOT/libexec/sub-help" "$path-help"
    chmod 755 "$path-help"
+   sed -i "s/$SUB_COMMAND\( \|$\)/$command\1/g" "$path-help"
 
    # Enable command listing
    cp "$_SUB_ROOT/libexec/sub-commands" "$path-commands"
    chmod 755 "$path-commands"
+   sed -i "s/$SUB_COMMAND\( \|$\)/$command\1/g" "$path-commands"
 
-   # Enable completions
-   # cp "$_SUB_ROOT/libexec/sub-completions" "$path-completions"
-   # chmod 755 "$path-completions"
-   # exec "$base completions"
+   # Helper dependencies
+   cp "$_SUB_ROOT/libexec/sub-helper" "$path-helper"
+   chmod 755 "$path-helper"
+   sed -i "s/$SUB_COMMAND\( \|$\)/$command\1/g" "$path-helper"
 
    printf "%s\n\n%-5s%s\n\n" "Command created! Edit your command at:" "" "$path"
 fi

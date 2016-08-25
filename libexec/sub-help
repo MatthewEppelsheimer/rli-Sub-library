@@ -4,31 +4,29 @@
 
 set -e
 
-base="$(basename $0)"
-base="${base%-help}"
 command="$1"
 case "$command" in
 "" ) 
-   printf "Usage:\n\n%-5s%-60s\n\n" "" "$($base helper usage $base)"
-   printf "Summary:\n\n%-5s%-60s\n\n" "" "$($base helper summary $base)"
-   printf "%s\n\n" "$($base commands)"
-   printf "%s\n\n" "See '$base help <command>' for information on a specific command."
+   printf "Summary:\n\n%-5s%-60s\n\n" "" "$($SUB_COMMAND helper summary $SUB_COMMAND)"
+   printf "Usage:\n\n%-5s%-60s\n\n" "" "$($SUB_COMMAND helper usage $SUB_COMMAND)"
+   printf "%s\n\n" "$($SUB_COMMAND commands)"
+   printf "%s\n\n" "See '$SUB_COMMAND help <command>' for information on a specific command."
    ;;
 * )
-   usage="$($base helper usage $command)"
+   usage="$($SUB_COMMAND helper usage $command)"
 
-   if [[ ! -x "$_SUB_ROOT/libexec/$base-$command" ]]; then
-      echo "$base: no such command '$command'" >&2
+   if [[ ! -x "$_SUB_ROOT/libexec/$SUB_COMMAND-$command" ]]; then
+      echo "$SUB_COMMAND: no such command '$command'" >&2
       exit 1
    elif [[ -n "$usage" ]]; then
-      summary="$($base helper summary $command)"
+      summary="$($SUB_COMMAND helper summary $command)"
       if [[ -n $summary ]]; then
          printf "Summary:\n\n%-5s%s\n\n" "" "$summary"
       fi
-      
+
       printf "Usage:\n\n%-5s%s\n\n" "" "$usage"
 
-      help="$($base helper help $command)"
+      help="$($SUB_COMMAND helper help $command)"
       if [[ -n $help ]]; then
          printf "Help:\n\n%s\n\n" "$help"
       fi

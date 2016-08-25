@@ -3,13 +3,8 @@
 
 set -e
 
-base="$(basename $0)"
-base="${base%-helper}"
 helper=$1
-
-
 case "$helper" in
-
 
 # Print command usage
 "usage" )
@@ -17,17 +12,17 @@ case "$helper" in
 
    # Get command path
    case "$command" in
-   "" | "$base" )
-      path="$_SUB_ROOT/libexec/$base"
+   "" | "$SUB_COMMAND" )
+      path="$_SUB_ROOT/libexec/$SUB_COMMAND"
       ;;
    * )
-      path="$_SUB_ROOT/libexec/$base-$command"
+      path="$_SUB_ROOT/libexec/$SUB_COMMAND-$command"
       ;;
    esac
 
    # Check if command path exists
    if [[ -x "$path" ]]; then
-      usage=$(sed -n "s/^# Usage: \($base .*$\)/\1/p" "$path")
+      usage=$(sed -n "s/^# Usage: \($SUB_COMMAND .*$\)/\1/p" "$path")
       # Check if usage is documented
       if [[ -n $usage ]]; then
          echo "$usage"
@@ -42,11 +37,11 @@ case "$helper" in
 
    # Get command path
    case "$command" in
-   "" | "$base" )
-      path="$_SUB_ROOT/libexec/$base"
+   "" | "$SUB_COMMAND" )
+      path="$_SUB_ROOT/libexec/$SUB_COMMAND"
       ;;
    * )
-      path="$_SUB_ROOT/libexec/$base-$command"
+      path="$_SUB_ROOT/libexec/$SUB_COMMAND-$command"
       ;;
    esac
 
@@ -67,17 +62,16 @@ case "$helper" in
 
    # Get command path
    case "$command" in
-   "" | "$base" )
-      path="$_SUB_ROOT/libexec/$base"
+   "" | "$SUB_COMMAND" )
+      path="$_SUB_ROOT/libexec/$SUB_COMMAND"
       ;;
    * )
-      path="$_SUB_ROOT/libexec/$base-$command"
+      path="$_SUB_ROOT/libexec/$SUB_COMMAND-$command"
       ;;
    esac
 
    # Check if command path exists
    if [[ -x "$path" ]]; then
-      #help=$(sed -n "s/(^#|#) Help: \(.*\)/\1/p" "$path")
       help=$(awk '/^[^#]/{p=0} /^# Help:/{p=1} p' "$path" | sed "s/^# Help: /     /;s/^# /     /;s/^#/     /")
       # Check if summary is documented
       if [[ -n $help ]]; then
@@ -97,8 +91,8 @@ case "$helper" in
       empty=true
       printf "%s\n\n" "Commands:"
       for file in $( ls $_SUB_ROOT/libexec ); do
-         if [[ $file =~ ^$base-(.*) ]]; then
-            usage="$($base helper usage ${BASH_REMATCH[1]})"
+         if [[ $file =~ ^$SUB_COMMAND-(.*) ]]; then
+            usage="$($SUB_COMMAND helper usage ${BASH_REMATCH[1]})"
             if [[ -n $usage ]]; then
                printf "%-5s%s\n" "" "$usage"
                empty=false
@@ -114,7 +108,7 @@ case "$helper" in
    # List commands in machine-readable format
    "-l" | "--list" )
       for file in $( ls $_SUB_ROOT/libexec ); do
-         if [[ $file =~ ^$base-(.*) ]]; then
+         if [[ $file =~ ^$SUB_COMMAND-(.*) ]]; then
             command="${BASH_REMATCH[1]}"
             if [[ -n $command ]]; then
                printf "%s\n" "$command"
@@ -123,8 +117,8 @@ case "$helper" in
       done
       # For posterity
       # for file in $( ls $_SUB_ROOT/libexec ); do
-      #    if [[ $file =~ ^$base-.* ]]; then
-      #       usage=$(sed -n "s/^# Usage: $base \([-a-zA-Z0-9]*\).*$/\1/p" "$_SUB_ROOT/libexec/$file")
+      #    if [[ $file =~ ^$SUB_COMMAND-.* ]]; then
+      #       usage=$(sed -n "s/^# Usage: $SUB_COMMAND \([-a-zA-Z0-9]*\).*$/\1/p" "$_SUB_ROOT/libexec/$file")
       #       if [[ -n $usage ]]; then
       #          printf "%s\n" "$usage"
       #       fi
