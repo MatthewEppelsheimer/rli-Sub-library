@@ -1,42 +1,21 @@
 #!/usr/bin/env bash
-# Usage: sub commands
+# Usage: sub commands [-l]
 # Summary: List all sub commands
-# Help: This command is mostly used for autocompletion in various shells, and for `sub help`.
-# Also, this command helps find commands that are named the same as potentially builtin shell commands (which, cd, etc)
+# Help: Autocompletion and checking if command already exists
 
 set -e
 
-# Provide sub completions
-if [ "$1" = "--complete" ]; then
-  echo --sh
-  echo --no-sh
-  exit
-fi
+base="$(basename $0)"
+base="${base%-commands}"
 
-if [ "$1" = "--sh" ]; then
-  sh=1
-  shift
-elif [ "$1" = "--no-sh" ]; then
-  nosh=1
-  shift
-fi
-
-shopt -s nullglob
-
-{ for path in ${PATH//:/$'\n'}; do
-    for command in "${path}/sub-"*; do
-      command="${command##*sub-}"
-      if [ -n "$sh" ]; then
-        if [ ${command:0:3} = "sh-" ]; then
-          echo ${command##sh-}
-        fi
-      elif [ -n "$nosh" ]; then
-        if [ ${command:0:3} != "sh-" ]; then
-          echo ${command##sh-}
-        fi
-      else
-        echo ${command##sh-}
-      fi
-    done
-  done
-} | sort | uniq
+args="$1"
+case "$args" in
+# Human-readable list
+"" )
+   $base helper commands
+   ;;
+# Machine-readable list
+"-l" | "--list" )
+   $base helper commands -l
+   ;;
+esac

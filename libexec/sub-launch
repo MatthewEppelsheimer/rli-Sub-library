@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Usage: sub launch <command>
 # Summary: Launch a new subspace
-# Help: Launch a new executable into Subspace.
+# Help: Launch a new executable into subspace.
 
 command="$1"
 
@@ -17,7 +17,6 @@ fi
 
 path="$_SUB_ROOT/libexec/$command"
 link="$_SUB_ROOT/bin/$command"
-echo $path
 
 if [[ -e $path ]]
 then

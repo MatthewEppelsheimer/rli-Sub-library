@@ -13,7 +13,7 @@ if [[ $path =~ (^[\./])(.*) ]]; then
       abs_path=$(dirname "$cwd${BASH_REMATCH[2]}")
    fi
    export PATH="$abs_path/bin:$PATH"
-   echo "Subspace activated"
+   echo "You have entered subspace"
 else
    echo "Invalid path"
 fi

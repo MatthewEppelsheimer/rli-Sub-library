@@ -1,119 +1,44 @@
 #!/usr/bin/env bash
+# Usage: sub help [<command>]
+# Summary: List all sub commands
+# Help: This command is mostly used for autocompletion in various shells, and for `sub help`.
+# Also, this command helps find commands that are named the same as potentially builtin shell commands (which, cd, etc)
 set -e
 
-path="$(basename $0)"
-
-# Make sure we have a help command
-if [[ $path =~ (.+)-help ]]; then
-      base=${BASH_REMATCH[1]}
-else
-   echo "$base: no such command 'help'"
-   exit 1
-fi
-
-# Print subcommand summaries
-print_summaries() {
-   local commands=()
-   local summaries=()
-   local longest_command=0
-   local command
-
-   for command in $($base-commands); do
-      local file="$(command_path "$command")"
-      if [ ! -h "$file" ]; then
-         local summary="$(summary "$file")"
-         if [ -n "$summary" ]; then
-            commands["${#commands[@]}"]="$command"
-            summaries["${#summaries[@]}"]="$summary"
-
-            if [ "${#command}" -gt "$longest_command" ]; then
-               longest_command="${#command}"
-            fi
-         fi
-      fi
-   done
-
-   local index
-   local columns="$(tput cols)"
-   local summary_length=$(( $columns - $longest_command - 5 ))
-
-   for (( index=0; index < ${#commands[@]}; index++ )); do
-      printf "   %-${longest_command}s  %s\n" "${commands[$index]}" \
-         "$(truncate "$summary_length" "${summaries[$index]}")"
-   done
-}
-
-# Print help message
-print_help() {
-   local file="$1"
-   local usage="$(usage "$file")"
-
-   if [ -n "$usage" ]; then
-      echo "$usage"
-
-      local help="$(help "$file")"
-      [ -n "$help" ] && echo && echo "$help"
-   else
-      echo "Sorry, this command isn't documented yet."
-   fi
-}
-
-# Get subcommand path
-command_path() {
-   command -v "$base-$command" || command -v "$base-sh-$command" || true
-}
-
-# Get subcommand summary
-summary() {
-   sed -n "s/^# Summary: \(.*\)/\1/p" "$0"
-}
-
-# Get subcommand usage
-usage() {
-   sed -n "s/^# \(Usage: .*\)/\1/p" "$0"
-}
+base="$(basename $0)"
+base="${base%-help}"
+tab="      "
+command="$1"
 
 help() {
    awk '/^[^#]/{p=0} /^# Help:/{p=1} p' "$0" | sed "s/^# Help: //;s/^# //;s/^#//"
 }
 
-truncate() {
-   local max_length="$1"
-   local string="$2"
-
-   if [ "${#string}" -gt "$max_length" ]; then
-      local length=$(( $max_length - 3 ))
-      echo "${string:0:$length}..."
-   else
-      echo "$string"
-   fi
-}
-
-# Provide subcommand completions
-# if [ "$1" = "--complete" ]; then
-#    exec "$base-commands"
-#    exit
-# fi
-
-command="$1"
 case "$command" in
 "" ) 
-   echo "Usage:
-
-      $base <command> [<args>]
-   "
-   echo "Commands:
-
-      $(print_summaries)"
-   echo "See '$base help <command>' for information on a specific command."
+   printf "%s\n\n" "Usage:"
+   printf "$tab%s\n\n" "$($base helper usage $base)"
+   printf "%s\n\n" "$($base commands)"
+   printf "%s\n\n" "See '$base help <command>' for information on a specific command."
    ;;
 * )
-   file="$(command_path "$command")"
+   usage="$($base helper usage $command)"
+   summary="$($base helper summary $command)"
 
-   if [ -n "$file" ]; then
-      print_help "$file"
-   else
+   if [[ ! -x "$_SUB_ROOT/libexec/$base-$command" ]]; then
       echo "$base: no such command '$command'" >&2
       exit 1
+   elif [[ -n "$usage" ]]; then
+      printf "%s\n\n" "Usage:"
+      printf "$tab%s\n\n" "$usage"
+
+      if [[ -n $summary ]]; then
+         printf "%s\n\n" "Summary:"
+         printf "$tab%s\n\n" "$summary"
+      fi
+
+   else
+      printf "%s\n\n" "Usage:"
+      printf "%s\n\n" "$tabCommand not documented"
    fi
 esac

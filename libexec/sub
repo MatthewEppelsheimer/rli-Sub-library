@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Usage: sub <command> [<args>]
+# Summary: Welcome to subspace, an easy way to namespace subcommands
 
 set -e
 
@@ -10,8 +12,6 @@ cwd=$(pwd)
 
 # Path that was called
 path="${BASH_SOURCE[@]}"
-
-echo $path
 
 # Add root dir to path
 if [[ $path =~ (^[\./])(.*)(/"$base") ]]; then
@@ -40,11 +40,7 @@ case "$command" in
       exit 1
    fi
    ;;
-# Enable autocompletion
-# "--complete" )
-#    echo --path
-#    ;;
-# Handle all other commands
+# All other commands
 * )
    command_path="$(command -v "$base-$command" || true)"
 

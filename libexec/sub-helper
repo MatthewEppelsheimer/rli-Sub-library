@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+
+set -e
+
+base="$(basename $0)"
+base="${base%-helper}"
+helper=$1
+tab="      "
+
+
+case "$helper" in
+
+
+# Print command usage
+"usage" )
+   command=$2
+
+   # Get command path
+   case "$command" in
+   "" | "$base" )
+      path="$_SUB_ROOT/libexec/$base"
+      ;;
+   * )
+      path="$_SUB_ROOT/libexec/$base-$command"
+      ;;
+   esac
+
+   # Check if command path exists
+   if [[ -x "$path" ]]; then
+      usage=$(sed -n "s/^# Usage: \($base .*$\)/\1/p" "$path")
+      # Check if usage is documented
+      if [[ -n $usage ]]; then
+         echo "$usage"
+      fi
+   fi
+   ;;
+
+
+# Print command summary
+"summary" )
+   command=$2
+
+   # Get command path
+   case "$command" in
+   "" | "$base" )
+      path="$_SUB_ROOT/libexec/$base"
+      ;;
+   * )
+      path="$_SUB_ROOT/libexec/$base-$command"
+      ;;
+   esac
+
+   # Check if command path exists
+   if [[ -x "$path" ]]; then
+      summary=$(sed -n "s/^# Summary: \(.*$\)/\1/p" "$path")
+      # Check if summary is documented
+      if [[ -n $summary ]]; then
+         echo "$summary"
+      fi
+   fi
+   ;;
+
+
+# Add help
+
+
+# List commands
+"commands" )
+   flag=$2
+   case "$flag" in
+
+   # List commands in human-readable format
+   "" )
+      empty=true
+      printf "%s\n\n" "Commands:"
+      for file in $( ls $_SUB_ROOT/libexec ); do
+         if [[ $file =~ ^$base-(.*) ]]; then
+            usage="$($base helper usage ${BASH_REMATCH[1]})"
+            if [[ -n $usage ]]; then
+               echo "$tab$usage"
+               empty=false
+            fi
+         fi
+      done
+      if [[ $empty = true ]]; then
+         printf "%s%s" "$tab" "Looks like $base has no commands"
+      fi
+      echo ""
+      ;;
+
+   # List commands in machine-readable format
+   "-l" | "--list" )
+      for file in $( ls $_SUB_ROOT/libexec ); do
+         if [[ $file =~ ^$base-(.*) ]]; then
+            command="${BASH_REMATCH[1]}"
+            if [[ -n $command ]]; then
+               printf "%s\n" "$command"
+            fi
+         fi
+      done
+      # For posterity
+      # for file in $( ls $_SUB_ROOT/libexec ); do
+      #    if [[ $file =~ ^$base-.* ]]; then
+      #       usage=$(sed -n "s/^# Usage: $base \([-a-zA-Z0-9]*\).*$/\1/p" "$_SUB_ROOT/libexec/$file")
+      #       if [[ -n $usage ]]; then
+      #          printf "%s\n" "$usage"
+      #       fi
+      #    fi
+      # done
+      ;;
+   esac
+   ;;
+esac
