@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
+# Helper for default commands
 
 set -e
 
 base="$(basename $0)"
 base="${base%-helper}"
 helper=$1
-tab="      "
 
 
 case "$helper" in
@@ -61,7 +61,30 @@ case "$helper" in
    ;;
 
 
-# Add help
+# Print command help
+"help" )
+   command=$2
+
+   # Get command path
+   case "$command" in
+   "" | "$base" )
+      path="$_SUB_ROOT/libexec/$base"
+      ;;
+   * )
+      path="$_SUB_ROOT/libexec/$base-$command"
+      ;;
+   esac
+
+   # Check if command path exists
+   if [[ -x "$path" ]]; then
+      #help=$(sed -n "s/(^#|#) Help: \(.*\)/\1/p" "$path")
+      help=$(awk '/^[^#]/{p=0} /^# Help:/{p=1} p' "$path" | sed "s/^# Help: /     /;s/^# /     /;s/^#/     /")
+      # Check if summary is documented
+      if [[ -n $help ]]; then
+         echo "$help"
+      fi
+   fi
+   ;;
 
 
 # List commands
@@ -77,13 +100,13 @@ case "$helper" in
          if [[ $file =~ ^$base-(.*) ]]; then
             usage="$($base helper usage ${BASH_REMATCH[1]})"
             if [[ -n $usage ]]; then
-               echo "$tab$usage"
+               printf "%-5s%s\n" "" "$usage"
                empty=false
             fi
          fi
       done
       if [[ $empty = true ]]; then
-         printf "%s%s" "$tab" "Looks like $base has no commands"
+         printf "%-5s%s\n" "" "No commands documented"
       fi
       echo ""
       ;;

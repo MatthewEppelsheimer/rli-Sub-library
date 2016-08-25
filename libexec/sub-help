@@ -1,44 +1,39 @@
 #!/usr/bin/env bash
+# Print and format command usage, summary, and help info
 # Usage: sub help [<command>]
-# Summary: List all sub commands
-# Help: This command is mostly used for autocompletion in various shells, and for `sub help`.
-# Also, this command helps find commands that are named the same as potentially builtin shell commands (which, cd, etc)
+
 set -e
 
 base="$(basename $0)"
 base="${base%-help}"
-tab="      "
 command="$1"
-
-help() {
-   awk '/^[^#]/{p=0} /^# Help:/{p=1} p' "$0" | sed "s/^# Help: //;s/^# //;s/^#//"
-}
-
 case "$command" in
 "" ) 
-   printf "%s\n\n" "Usage:"
-   printf "$tab%s\n\n" "$($base helper usage $base)"
+   printf "Usage:\n\n%-5s%-60s\n\n" "" "$($base helper usage $base)"
+   printf "Summary:\n\n%-5s%-60s\n\n" "" "$($base helper summary $base)"
    printf "%s\n\n" "$($base commands)"
    printf "%s\n\n" "See '$base help <command>' for information on a specific command."
    ;;
 * )
    usage="$($base helper usage $command)"
-   summary="$($base helper summary $command)"
 
    if [[ ! -x "$_SUB_ROOT/libexec/$base-$command" ]]; then
       echo "$base: no such command '$command'" >&2
       exit 1
    elif [[ -n "$usage" ]]; then
-      printf "%s\n\n" "Usage:"
-      printf "$tab%s\n\n" "$usage"
-
+      summary="$($base helper summary $command)"
       if [[ -n $summary ]]; then
-         printf "%s\n\n" "Summary:"
-         printf "$tab%s\n\n" "$summary"
+         printf "Summary:\n\n%-5s%s\n\n" "" "$summary"
+      fi
+      
+      printf "Usage:\n\n%-5s%s\n\n" "" "$usage"
+
+      help="$($base helper help $command)"
+      if [[ -n $help ]]; then
+         printf "Help:\n\n%s\n\n" "$help"
       fi
 
    else
-      printf "%s\n\n" "Usage:"
-      printf "%s\n\n" "$tabCommand not documented"
+      printf "Usage:\n\n%-5s%s\n\n" "" "Command not documented"
    fi
 esac

@@ -1,7 +1,16 @@
 #!/usr/bin/env bash
 # Usage: sub launch <command>
-# Summary: Launch a new subspace
-# Help: Launch a new executable into subspace.
+# Summary: Launch a new executable into subspace
+# Help: Launch creates a new executable in subspace. Your
+# new command is added to the subspace path and comes
+# with these subcommands by default:
+#
+#      <command> commands
+#      <command> help
+#
+# After launching, you can create more subcommands for
+# your new command by following the naming scheme in
+# your subspace library.
 
 command="$1"
 
@@ -43,6 +52,5 @@ else
    # chmod 755 "$path-completions"
    # exec "$base completions"
 
-   echo "Command created!"
-   echo "Edit your command at $path"
+   printf "%s\n\n%-5s%s\n\n" "Command created! Edit your command at:" "" "$path"
 fi

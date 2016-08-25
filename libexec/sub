@@ -35,7 +35,7 @@ command="$1"
 case "$command" in
 # Help command
 "" | "-h" | "--help" )
-   if [ ! -x "$base-help" ]; then
+   if [[ ! -x "$base-help" ]]; then
       exec "$base-help" >&2
       exit 1
    fi
@@ -44,7 +44,7 @@ case "$command" in
 * )
    command_path="$(command -v "$base-$command" || true)"
 
-   if [ ! -x "$command_path" ]; then
+   if [[ ! -x "$command_path" ]]; then
       echo "$base: no such command '$command'" >&2
       exit 1
    fi
