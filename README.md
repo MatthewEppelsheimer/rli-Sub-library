@@ -72,15 +72,15 @@ There are three ways to run the commands in your subspace:
 1. Open the file `.bashrc` in your home directory. If it doesn't exist, create it.
 2. Find the line that says:
 
-        export PATH=/a/bunch/of/paths/to/export:$PATH
+    `export PATH=/a/bunch/of/paths/to/export:$PATH`
 
 3. Add your subspace `bin` path to the beginning of the PATH variable, for example:
 
-        export PATH=/path/to/subspace/bin:/a/bunch/of/paths/to/export:$PATH
+    `export PATH=/path/to/subspace/bin:/a/bunch/of/paths/to/export:$PATH`
 
     If your file does not export the PATH variable, create and export it, for example:
 
-        export PATH=/path/to/subspace/bin:$PATH
+    `export PATH=/path/to/subspace/bin:$PATH`
 
 4. Restart your terminal by closing and reopening it, or by running `source ~/.bash_rc`
 
