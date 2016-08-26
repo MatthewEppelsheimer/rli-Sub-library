@@ -4,34 +4,115 @@
 
 set -e
 
+# Get subcommand usage
+function parse_usage {
+   command=$1
+
+   # Get command path
+   case "$command" in
+   "" | "$SUB_COMMAND" )
+      path="$_SUB_ROOT/libexec/$SUB_COMMAND"
+      ;;
+   * )
+      path="$_SUB_ROOT/libexec/$SUB_COMMAND-$command"
+      ;;
+   esac
+
+   # Check if command path exists
+   if [[ -x "$path" ]]; then
+      usage=$(sed -n "s/^# Usage: \($SUB_COMMAND .*$\)/\1/p" "$path")
+      # Check if usage is documented
+      if [[ -n $usage ]]; then
+         echo "$usage"
+      fi
+   fi
+}
+
+# Get subcommand summary
+function parse_summary {
+   command=$1
+
+   # Get command path
+   case "$command" in
+   "" | "$SUB_COMMAND" )
+      path="$_SUB_ROOT/libexec/$SUB_COMMAND"
+      ;;
+   * )
+      path="$_SUB_ROOT/libexec/$SUB_COMMAND-$command"
+      ;;
+   esac
+
+   # Check if command path exists
+   if [[ -x "$path" ]]; then
+      summary=$(sed -n "s/^# Summary: \(.*$\)/\1/p" "$path")
+      # Check if summary is documented
+      if [[ -n $summary ]]; then
+         echo "$summary"
+      fi
+   fi
+}
+
+# Get subcommand help
+function parse_help {
+   command=$1
+
+   # Get command path
+   case "$command" in
+   "" | "$SUB_COMMAND" )
+      path="$_SUB_ROOT/libexec/$SUB_COMMAND"
+      ;;
+   * )
+      path="$_SUB_ROOT/libexec/$SUB_COMMAND-$command"
+      ;;
+   esac
+
+   # Check if command path exists
+   if [[ -x "$path" ]]; then
+      help=$(awk '/^[^#]/{p=0} /^# Help:/{p=1} p' "$path" | sed "s/^# Help: /     /;s/^# /     /;s/^#/     /")
+      # Check if summary is documented
+      if [[ -n $help ]]; then
+         echo "$help"
+      fi
+   fi
+}
+
+# Format and print help info
 command="$1"
 case "$command" in
 "" ) 
-   printf "Summary:\n\n%-5s%-60s\n\n" "" "$($SUB_COMMAND helper summary $SUB_COMMAND)"
-   printf "Usage:\n\n%-5s%-60s\n\n" "" "$($SUB_COMMAND helper usage $SUB_COMMAND)"
+   printf "Summary:\n\n%-5s%-60s\n\n" "" "$(parse_summary $SUB_COMMAND)"
+   printf "Usage:\n\n%-5s%-60s\n\n" "" "$(parse_usage $SUB_COMMAND)"
    printf "%s\n\n" "$($SUB_COMMAND commands)"
-   printf "%s\n\n" "See '$SUB_COMMAND help <command>' for information on a specific command."
+   printf "%s\n\n" "See '$SUB_COMMAND help <subcommand>' for information on a specific subcommand."
+   ;;
+"-u" | "--usage" )
+   subcommand="$2"
+   if [[ -z $subcommand ]]; then
+      echo "'$SUB_COMMAND help -u <subcommand>' requires a subcommand"
+   else
+      echo $(parse_usage $2)
+   fi
    ;;
 * )
-   usage="$($SUB_COMMAND helper usage $command)"
+   usage="$(parse_usage $command)"
 
    if [[ ! -x "$_SUB_ROOT/libexec/$SUB_COMMAND-$command" ]]; then
-      echo "$SUB_COMMAND: no such command '$command'" >&2
+      echo "$SUB_COMMAND: no such subcommand '$command'" >&2
       exit 1
    elif [[ -n "$usage" ]]; then
-      summary="$($SUB_COMMAND helper summary $command)"
+      summary="$(parse_summary $command)"
       if [[ -n $summary ]]; then
          printf "Summary:\n\n%-5s%s\n\n" "" "$summary"
       fi
 
       printf "Usage:\n\n%-5s%s\n\n" "" "$usage"
 
-      help="$($SUB_COMMAND helper help $command)"
+      help="$(parse_help $command)"
       if [[ -n $help ]]; then
          printf "Help:\n\n%s\n\n" "$help"
       fi
 
    else
-      printf "Usage:\n\n%-5s%s\n\n" "" "Command not documented"
+      printf "Usage:\n\n%-5s%s\n\n" "" "Subcommand not documented"
    fi
 esac
