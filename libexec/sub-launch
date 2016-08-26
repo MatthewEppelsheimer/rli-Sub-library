@@ -22,8 +22,8 @@ then
    exit 0
 fi
 
-path="$_SUB_ROOT/libexec/$command"
-link="$_SUB_ROOT/bin/$command"
+path="$SUB_ROOT/libexec/$command"
+link="$SUB_ROOT/bin/$command"
 
 if [[ -e $path ]]
 then
@@ -33,24 +33,24 @@ then
    echo "ERROR: $link already exists"
 else
    # Add new command
-   cp "$_SUB_ROOT/libexec/sub" "$path"
+   cp "$SUB_ROOT/libexec/sub" "$path"
    chmod 755 $path
    ln -s $path $link
    sed -i "s/$SUB_COMMAND\( \|$\)/$command\1/g" "$path"
    sed -i "s/\(# Summary: \)\(.*$\)/\1New command in subspace. Add you subcommands!/g" "$path"
 
    # Add help command
-   cp "$_SUB_ROOT/libexec/sub-help" "$path-help"
+   cp "$SUB_ROOT/libexec/sub-help" "$path-help"
    chmod 755 "$path-help"
    sed -i "s/$SUB_COMMAND\( \|$\)/$command\1/g" "$path-help"
 
    # Enable command listing
-   cp "$_SUB_ROOT/libexec/sub-commands" "$path-commands"
+   cp "$SUB_ROOT/libexec/sub-commands" "$path-commands"
    chmod 755 "$path-commands"
    sed -i "s/$SUB_COMMAND\( \|$\)/$command\1/g" "$path-commands"
 
    # Helper dependencies
-   cp "$_SUB_ROOT/libexec/sub-helper" "$path-helper"
+   cp "$SUB_ROOT/libexec/sub-helper" "$path-helper"
    chmod 755 "$path-helper"
    sed -i "s/$SUB_COMMAND\( \|$\)/$command\1/g" "$path-helper"
 

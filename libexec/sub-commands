@@ -12,7 +12,7 @@ case "$flag" in
 "" )
   empty=true
   printf "%s\n\n" "Subcommands:"
-  for file in $( ls $_SUB_ROOT/libexec ); do
+  for file in $( ls $SUB_ROOT/libexec ); do
      #echo $SUB_COMMAND
      if [[ $file =~ "$SUB_COMMAND"-(.*) ]]; then
         #echo $file
@@ -31,7 +31,7 @@ case "$flag" in
 
 # List commands in machine-readable format
 "-l" | "--list" )
-  for file in $( ls $_SUB_ROOT/libexec ); do
+  for file in $( ls $SUB_ROOT/libexec ); do
      if [[ $file =~ ^$SUB_COMMAND-(.*) ]]; then
         command="${BASH_REMATCH[1]}"
         if [[ -n $command ]]; then

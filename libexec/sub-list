@@ -1,12 +1,18 @@
 #!/usr/bin/env bash
 # Usage: sub list
-# Summary: List commands
+# Summary: List commands in your subspace library
 # Help: For more information about a specific command, run '<command> help'
 
-for file in $( ls $_SUB_ROOT/libexec ); do
+empty=true
+for file in $( ls $SUB_ROOT/libexec ); do
  	if [[ $file =~ ^[^-]*$ ]]; then
-    	if [[ -x $file ]]; then
+    	if [[ -x "$SUB_ROOT/libexec/$file" ]]; then
        	echo $file
+       	empty=false
     	fi
  	fi
 done
+
+if [[ $empty = true ]]; then
+	echo "This subspace has no commands"
+fi

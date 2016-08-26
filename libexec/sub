@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # Usage: sub <subcommand> [<args>]
 # Summary: Welcome to subspace, an easy way to namespace shell commands
-program=Subspace
+# Help: See 'sub help <subcommand>' for information on a specific subcommand
+# See 'sub list' for a list of commands in this subspace
+subspace=Subspace
 version=0.1
 
 set -e
@@ -16,11 +18,11 @@ path="${BASH_SOURCE[@]}"
 # Add root dir to path
 if [[ $path =~ (^[\./])(.*)(/"$SUB_COMMAND") ]]; then
    if [[ "/" = "${BASH_REMATCH[1]}" ]]; then
-      export _SUB_ROOT="${path%/*/$SUB_COMMAND}"
+      export SUB_ROOT="${path%/*/$SUB_COMMAND}"
    else
       root=$(dirname "$cwd${BASH_REMATCH[2]}")
       abs_path="$cwd${BASH_REMATCH[2]}"
-      export _SUB_ROOT="${abs_path%/*}"
+      export SUB_ROOT="${abs_path%/*}"
    fi
 else
    echo "Invalid path to $SUB_COMMAND"
@@ -28,7 +30,7 @@ else
 fi
 
 # Add lib dir to path
-export PATH="$_SUB_ROOT/libexec:$PATH"
+export PATH="$SUB_ROOT/libexec:$PATH"
 
 # Parse commands
 command="$1"
@@ -41,7 +43,7 @@ case "$command" in
    fi
    ;;
 "-v" | "--version" )
-   echo "$program $version"
+   echo "$subspace $version"
    ;;
 # All other commands
 * )

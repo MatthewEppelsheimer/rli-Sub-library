@@ -11,10 +11,10 @@ function parse_usage {
    # Get command path
    case "$command" in
    "" | "$SUB_COMMAND" )
-      path="$_SUB_ROOT/libexec/$SUB_COMMAND"
+      path="$SUB_ROOT/libexec/$SUB_COMMAND"
       ;;
    * )
-      path="$_SUB_ROOT/libexec/$SUB_COMMAND-$command"
+      path="$SUB_ROOT/libexec/$SUB_COMMAND-$command"
       ;;
    esac
 
@@ -35,10 +35,10 @@ function parse_summary {
    # Get command path
    case "$command" in
    "" | "$SUB_COMMAND" )
-      path="$_SUB_ROOT/libexec/$SUB_COMMAND"
+      path="$SUB_ROOT/libexec/$SUB_COMMAND"
       ;;
    * )
-      path="$_SUB_ROOT/libexec/$SUB_COMMAND-$command"
+      path="$SUB_ROOT/libexec/$SUB_COMMAND-$command"
       ;;
    esac
 
@@ -59,10 +59,10 @@ function parse_help {
    # Get command path
    case "$command" in
    "" | "$SUB_COMMAND" )
-      path="$_SUB_ROOT/libexec/$SUB_COMMAND"
+      path="$SUB_ROOT/libexec/$SUB_COMMAND"
       ;;
    * )
-      path="$_SUB_ROOT/libexec/$SUB_COMMAND-$command"
+      path="$SUB_ROOT/libexec/$SUB_COMMAND-$command"
       ;;
    esac
 
@@ -79,12 +79,11 @@ function parse_help {
 # Format and print help info
 command="$1"
 case "$command" in
+# Get general command info
 "" ) 
-   printf "Summary:\n\n%-5s%-60s\n\n" "" "$(parse_summary $SUB_COMMAND)"
-   printf "Usage:\n\n%-5s%-60s\n\n" "" "$(parse_usage $SUB_COMMAND)"
-   printf "%s\n\n" "$($SUB_COMMAND commands)"
-   printf "%s\n\n" "See '$SUB_COMMAND help <subcommand>' for information on a specific subcommand."
+   $SUB_COMMAND help $SUB_COMMAND
    ;;
+# Get usage from a subcommand
 "-u" | "--usage" )
    subcommand="$2"
    if [[ -z $subcommand ]]; then
@@ -94,24 +93,33 @@ case "$command" in
    fi
    ;;
 * )
-   usage="$(parse_usage $command)"
+   # Set path for command or subcommand
+   if [[ $SUB_COMMAND = $command ]]; then
+      path="$SUB_ROOT/libexec/$command"
+   else
+      path="$SUB_ROOT/libexec/$SUB_COMMAND-$command"
+   fi
 
-   if [[ ! -x "$_SUB_ROOT/libexec/$SUB_COMMAND-$command" ]]; then
+   # Only print help info for commands with documented usage
+   usage="$(parse_usage $command)"
+   if [[ ! -x $path  ]]; then
       echo "$SUB_COMMAND: no such subcommand '$command'" >&2
       exit 1
    elif [[ -n "$usage" ]]; then
+      # Print summary
       summary="$(parse_summary $command)"
       if [[ -n $summary ]]; then
          printf "Summary:\n\n%-5s%s\n\n" "" "$summary"
       fi
 
+      # Print usage
       printf "Usage:\n\n%-5s%s\n\n" "" "$usage"
 
+      # Print help
       help="$(parse_help $command)"
       if [[ -n $help ]]; then
          printf "Help:\n\n%s\n\n" "$help"
       fi
-
    else
       printf "Usage:\n\n%-5s%s\n\n" "" "Subcommand not documented"
    fi
