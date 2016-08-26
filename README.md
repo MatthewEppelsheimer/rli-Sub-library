@@ -72,15 +72,15 @@ There are three ways to run the commands in your subspace:
 1. Open the file `.bashrc` in your home directory. If it doesn't exist, create it.
 2. Find the line that says:
 
-    export PATH=/a/bunch/of/paths/to/export:$PATH
+        export PATH=/a/bunch/of/paths/to/export:$PATH
 
 3. Add your subspace `bin` path to the beginning of the PATH variable, for example:
 
-    export PATH=/path/to/subspace/bin:/a/bunch/of/paths/to/export:$PATH
+        export PATH=/path/to/subspace/bin:/a/bunch/of/paths/to/export:$PATH
 
-If your file does not export the PATH variable, create and export it, for example:
+    If your file does not export the PATH variable, create and export it, for example:
 
-    export PATH=/path/to/subspace/bin:$PATH
+        export PATH=/path/to/subspace/bin:$PATH
 
 4. Restart your terminal by closing and reopening it, or by running `source ~/.bash_rc`
 
@@ -90,21 +90,13 @@ You should now be able to run commands in your subspace from your restarted term
 
 You can run your command using it's full or relative path. For example:
 
-`$ /home/path/to/subspace/bin/command`
-
-or
-
-`$ ./relative/path/to/subspace/bin/command`
+`$ /home/path/to/subspace/bin/command` or `$ ./relative/path/to/subspace/bin/command`
 
 ### Activating Your Subspace
 
 You can activate your subspace within a given terminal by running `source` on the path to your subspace `activate` command. For example,
 
-`$ source /home/path/to/subspace/activate`
-
-or
-
-`$ source ./relative/path/to/subspace/active`
+`$ source /home/path/to/subspace/activate` or `$ source ./relative/path/to/subspace/active`
 
 This can be useful if you would like to test commands for a subspace that you are developing but do not want those commands to permanently exist on your shell path, or do not want those commands to permanently override shell commands with the same name. 
 
