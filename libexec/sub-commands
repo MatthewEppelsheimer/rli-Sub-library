@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Usage: sub commands [-l]
-# Summary: List all sub commands
-# Help: Autocompletion and checking if command already exists
+# Summary: List all subcommands
+# Help: Run with -l for an unformatted list of subcommands
 
 set -e
 

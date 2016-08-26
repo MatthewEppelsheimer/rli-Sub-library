@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Usage: sub list
-# Summary: List commands in your sub library
+# Summary: List commands
+# Help: For more information about a specific command, run '<command> help'
 
 for file in $( ls $_SUB_ROOT/libexec ); do
  	if [[ $file =~ ^[^-]*$ ]]; then

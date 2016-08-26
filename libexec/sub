@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Usage: sub <subcommand> [<args>]
-# Summary: Welcome sub to subspace, an easy way to namespace subcommands
+# Summary: Welcome to subspace, an easy way to namespace shell commands
 
 set -e
 
