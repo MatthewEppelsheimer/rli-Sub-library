@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Usage: sub <subcommand> [<args>]
 # Summary: Welcome to subspace, an easy way to namespace shell commands
-# Help: See 'sub help <subcommand>' for information on a specific subcommand
+# Help: See 'sub commands' for a list of subcommands
 # See 'sub list' for a list of commands in this subspace
-subspace=Subspace
+program=Subspace
 version=0.1
 
 set -e
@@ -43,7 +43,7 @@ case "$command" in
    fi
    ;;
 "-v" | "--version" )
-   echo "$subspace $version"
+   echo "$program $version"
    ;;
 # All other commands
 * )

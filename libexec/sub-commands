@@ -10,34 +10,34 @@ case "$flag" in
 
 # List commands in human-readable format
 "" )
-  empty=true
-  printf "%s\n\n" "Subcommands:"
-  for file in $( ls $SUB_ROOT/libexec ); do
-     #echo $SUB_COMMAND
-     if [[ $file =~ "$SUB_COMMAND"-(.*) ]]; then
-        #echo $file
-        usage="$($SUB_COMMAND help -u ${BASH_REMATCH[1]})"
-        if [[ -n $usage ]]; then
-           printf "%-5s%s\n" "" "$usage"
-           empty=false
-        fi
-     fi
-  done
-  if [[ $empty = true ]]; then
-     printf "%-5s%s\n" "" "No documented subcommands"
-  fi
-  echo ""
-  ;;
+   empty=true
+   printf "%s\n\n" "Subcommands:"
+   for file in $( ls $SUB_ROOT/libexec ); do
+      if [[ $file =~ "$SUB_COMMAND"-(.*) ]]; then
+         usage="$($SUB_COMMAND help -u ${BASH_REMATCH[1]})"
+         if [[ -n $usage ]]; then
+            printf "%-5s%s\n" "" "$usage"
+            empty=false
+         fi
+      fi
+   done
+   if [[ $empty = true ]]; then
+      printf "%-5s%s\n" "" "No documented subcommands"
+   else
+      printf "\n%s%s\n" "" "See '$SUB_COMMAND help <subcommand>' for information on a specific subcommand"	
+   fi
+   echo ""
+   ;;
 
 # List commands in machine-readable format
 "-l" | "--list" )
-  for file in $( ls $SUB_ROOT/libexec ); do
-     if [[ $file =~ ^$SUB_COMMAND-(.*) ]]; then
-        command="${BASH_REMATCH[1]}"
-        if [[ -n $command ]]; then
-           printf "%s\n" "$command"
-        fi
-     fi
-  done
-  ;;
+   for file in $( ls $SUB_ROOT/libexec ); do
+      if [[ $file =~ ^$SUB_COMMAND-(.*) ]]; then
+         command="${BASH_REMATCH[1]}"
+         if [[ -n $command ]]; then
+            printf "%s\n" "$command"
+         fi
+      fi
+   done
+   ;;
 esac

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Usage: sub launch <command>
 # Summary: Launch a new executable into subspace
-# Help: Launch creates a new executable in subspace. Your
-# new command is added to the subspace path and comes
+# Help: Launch creates a new executable in your subspace.
+# Your new command is added to the subspace path and comes
 # with these default subcommands:
 #
 #      <command> commands
@@ -37,7 +37,10 @@ else
    chmod 755 $path
    ln -s $path $link
    sed -i "s/$SUB_COMMAND\( \|$\)/$command\1/g" "$path"
-   sed -i "s/\(# Summary: \)\(.*$\)/\1New command in subspace. Add you subcommands!/g" "$path"
+   sed -i "s/\(# Summary: \)\(.*$\)/\1New command in subspace. Add your subcommands!/g" "$path"
+   sed -i "/^# Help: /{n;d}" "$path"
+   sed -i "s/^program=.*/program=$command/" "$path"
+   sed -i "s/^version=.*/version=version not specified/" "$path"
 
    # Add help command
    cp "$SUB_ROOT/libexec/sub-help" "$path-help"
@@ -48,11 +51,6 @@ else
    cp "$SUB_ROOT/libexec/sub-commands" "$path-commands"
    chmod 755 "$path-commands"
    sed -i "s/$SUB_COMMAND\( \|$\)/$command\1/g" "$path-commands"
-
-   # Helper dependencies
-   cp "$SUB_ROOT/libexec/sub-helper" "$path-helper"
-   chmod 755 "$path-helper"
-   sed -i "s/$SUB_COMMAND\( \|$\)/$command\1/g" "$path-helper"
 
    printf "%s\n\n%-5s%s\n\n" "Command created! Edit your command at:" "" "$path"
 fi

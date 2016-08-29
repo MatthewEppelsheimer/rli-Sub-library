@@ -30,7 +30,7 @@ Your subspace looks like this:
 
 All commands in your subspace use the format:
     
-    $ <command> <subcommand> [<args>]
+`$ <command> <subcommand> [<args>]`
 
 Running `sub launch <command>` will add a new command to your subspace, along with the default `commands` and `help` subcommands. You can add more subcommands by placing executables in your subspace's `libexec` directory. Subcommand file names must take the format of `<command>-<subcommand>`. You can write subcommands in any language you want as long as they exist as executables in `libexec`.
 
