@@ -40,7 +40,7 @@ else
    sed -i "s/\(# Summary: \)\(.*$\)/\1New command in subspace. Add your subcommands!/g" "$path"
    sed -i "/^# Help: /{n;d}" "$path"
    sed -i "s/^program=.*/program=$command/" "$path"
-   sed -i "s/^version=.*/version=version not specified/" "$path"
+   sed -i "s/^version=.*/version=\"version not specified\"/" "$path"
 
    # Add help command
    cp "$SUB_ROOT/libexec/sub-help" "$path-help"
